@@ -1,6 +1,8 @@
 # centroids
 Centroids for anomaly detection
 
+![Centroids of behavior](https://raw.githubusercontent.com/subsilico/centroids/master/centroids.png)
+
 Below is a basic implementation of an anomaly detection algorythm that uses the concept of centroids
 
 
