@@ -1,6 +1,14 @@
 # centroids
 Centroids for anomaly detection
 
+Centroids3.Rmd updates the math to use Hotelling's T^2 statistic to compare samples:
+
+![Hotelling's](https://raw.githubusercontent.com/subsilico/centroids/master/p-v-dist-centroids.png)
+
+This graph shows how cluster distance is related to Hotelling's statistic.
+
+
+
 ![Centroids of behavior](https://raw.githubusercontent.com/subsilico/centroids/master/centroids.png)
 
 Below is a basic implementation of an anomaly detection algorythm that uses the concept of centroids
