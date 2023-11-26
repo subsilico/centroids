@@ -1,0 +1,404 @@
+---
+title: "Centroids3"
+author: "matt wimer"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(ggplot2)
+library(reshape2)
+
+set.seed(123)
+n_samples <- 100
+n_features <- 5000
+
+# Generate non-anomalous data sets
+data_set1 <- matrix(rnorm(n_samples * n_features), nrow = n_samples, ncol = n_features)
+data_set2 <- matrix(runif(n_samples * n_features, -2, 2), nrow = n_samples, ncol = n_features)
+data_set3 <- matrix(rexp(n_samples * n_features, 1), nrow = n_samples, ncol = n_features)
+
+# Heatmap for Data Set 1
+heatmap(data_set1, main = "Heatmap of Data Set 1", Colv = NA, Rowv = NA)
+
+# Histogram for Data Set 1
+hist_data_set1 <- melt(data_set1)
+ggplot(hist_data_set1, aes(x = value)) +
+  geom_histogram(bins = 30, fill = "blue", alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Histogram of Data Set 1", x = "Values", y = "Frequency")
+
+# Heatmap for Data Set 2
+heatmap(data_set2, main = "Heatmap of Data Set 2", Colv = NA, Rowv = NA)
+
+# Histogram for Data Set 2
+hist_data_set2 <- melt(data_set2)
+ggplot(hist_data_set2, aes(x = value)) +
+  geom_histogram(bins = 30, fill = "green", alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Histogram of Data Set 2", x = "Values", y = "Frequency")
+
+# Heatmap for Data Set 3
+heatmap(data_set3, main = "Heatmap of Data Set 3", Colv = NA, Rowv = NA)
+
+# Histogram for Data Set 3
+hist_data_set3 <- melt(data_set3)
+ggplot(hist_data_set3, aes(x = value)) +
+  geom_histogram(bins = 30, fill = "red", alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Histogram of Data Set 3", x = "Values", y = "Frequency")
+
+# Combine data sets
+combined_data <- rbind(data_set1, data_set2, data_set3)
+
+# Heatmap for Combined Data
+heatmap(combined_data, main = "Heatmap of Combined Data", Colv = NA, Rowv = NA)
+
+# Histogram for Combined Data
+hist_combined_data <- melt(combined_data)
+ggplot(hist_combined_data, aes(x = value)) +
+  geom_histogram(bins = 50, fill = "purple", alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Histogram of Combined Data", x = "Values", y = "Frequency")
+
+# Split data into Corpus and Validation Set
+validation_set_size <- round(0.2 * n_samples)  # 20% of the data as validation set
+corpus_set_size <- n_samples - validation_set_size
+
+# Randomly sample indices for validation set
+set.seed(123)
+validation_indices <- sample(1:(3 * n_samples), validation_set_size)  # 3 times n_samples because of 3 data sets
+
+# Create Corpus and Validation Sets
+validation_set <- combined_data[validation_indices, ]
+corpus_set <- combined_data[-validation_indices, ]
+
+# Visualize Validation Set
+heatmap(validation_set, main = "Heatmap of Validation Set", Colv = NA, Rowv = NA)
+hist_validation_set <- melt(validation_set)
+ggplot(hist_validation_set, aes(x = value)) +
+  geom_histogram(bins = 30, fill = "orange", alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Histogram of Validation Set", x = "Values", y = "Frequency")
+
+# Visualize Corpus Set
+heatmap(corpus_set, main = "Heatmap of Corpus Set", Colv = NA, Rowv = NA)
+hist_corpus_set <- melt(corpus_set)
+ggplot(hist_corpus_set, aes(x = value)) +
+  geom_histogram(bins = 30, fill = "cyan", alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Histogram of Corpus Set", x = "Values", y = "Frequency")
+
+
+# Generate anomalous data (based on data_set1 with added noise)
+anomalous_data <- data_set1 + matrix(rnorm(n_samples * n_features, mean = 5, sd = 2), nrow = n_samples, ncol = n_features)
+
+# Visualize Anomalous Data
+heatmap(anomalous_data, main = "Heatmap of Anomalous Data", Colv = NA, Rowv = NA)
+hist_anomalous_data <- melt(anomalous_data)
+ggplot(hist_anomalous_data, aes(x = value)) +
+  geom_histogram(bins = 30, fill = "pink", alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Histogram of Anomalous Data", x = "Values", y = "Frequency")
+
+
+# Split anomalous data into Corpus and Validation Set
+anomalous_validation_set_size <- round(0.2 * n_samples)  # 20% as validation set
+anomalous_corpus_set_size <- n_samples - anomalous_validation_set_size
+
+# Randomly sample indices for anomalous validation set
+set.seed(123)
+anomalous_validation_indices <- sample(1:n_samples, anomalous_validation_set_size)
+
+# Create Anomalous Corpus and Validation Sets
+anomalous_validation_set <- anomalous_data[anomalous_validation_indices, ]
+anomalous_corpus_set <- anomalous_data[-anomalous_validation_indices, ]
+
+# Visualize Anomalous Validation Set
+heatmap(anomalous_validation_set, main = "Heatmap of Anomalous Validation Set", Colv = NA, Rowv = NA)
+hist_anomalous_validation_set <- melt(anomalous_validation_set)
+ggplot(hist_anomalous_validation_set, aes(x = value)) +
+  geom_histogram(bins = 30, fill = "lightblue", alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Histogram of Anomalous Validation Set", x = "Values", y = "Frequency")
+
+# Visualize Anomalous Corpus Set
+heatmap(anomalous_corpus_set, main = "Heatmap of Anomalous Corpus Set", Colv = NA, Rowv = NA)
+hist_anomalous_corpus_set <- melt(anomalous_corpus_set)
+ggplot(hist_anomalous_corpus_set, aes(x = value)) +
+  geom_histogram(bins = 30, fill = "lightgreen", alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Histogram of Anomalous Corpus Set", x = "Values", y = "Frequency")
+
+
+
+library(ggplot2)
+library(cluster)
+library(factoextra)
+library(Hotelling)
+set.seed(123)  # Ensure reproducibility
+
+itercount = 24
+
+optimal_k_values <- numeric(itercount)  # Store optimal k values for each outer loop iteration
+anomalous_distances <- numeric(itercount)   # Store anomalous distances for each iteration
+non_anomalous_distances <- numeric(itercount)  # Store non-anomalous distances for comparison
+
+hotelling_p_values <- numeric(itercount)
+hotelling_p_values_non_anomalous <- numeric(itercount)
+
+
+# Outer loop - run 3 times
+for (i in 1:itercount) {
+  sampled_data_set1 <- data_set1[sample(1:nrow(data_set1), 33), ]
+  sampled_data_set2 <- data_set2[sample(1:nrow(data_set2), 33), ]
+  sampled_data_set3 <- data_set3[sample(1:nrow(data_set3), 33), ]
+  
+  combined_sampled_data <- rbind(sampled_data_set1, sampled_data_set2, sampled_data_set3)
+  distance_matrix_non_anomalous <- dist(combined_sampled_data, method = "manhattan")
+  pca_results_non_anomalous <- prcomp(as.matrix(distance_matrix_non_anomalous), center = TRUE, scale. = TRUE)
+  
+  #gap_stat <- clusGap(pca_results_non_anomalous$x, FUN = kmeans, nstart = 25, K.max = 10, B = 50)
+  #optimal_k <- which.max(gap_stat$Tab[, "gap"])
+  optimal_k = 3
+  optimal_k_values[i] <- optimal_k
+  
+  kmeans_non_anomalous <- kmeans(combined_sampled_data, centers = optimal_k, nstart = 10)
+  cluster_assignments <- kmeans_non_anomalous$cluster
+  print(cluster_assignments)
+  
+  # Determine the number of PCs to retain for 96% variance
+  variance_explained <- cumsum(pca_results_non_anomalous$sdev^2) / sum(pca_results_non_anomalous$sdev^2)
+  num_pcs <- which(variance_explained >= 0.96)[1]
+  print("num pcs")
+  print(num_pcs)
+  
+  distances_inner_loop <- numeric(nrow(anomalous_validation_set))
+  min_dists <- numeric(nrow(anomalous_validation_set))
+  min_dists_non_anomalous <- numeric(nrow(anomalous_validation_set))
+  ht_vals <- numeric(nrow(anomalous_validation_set))
+  ht_vals_non_anomalous <- numeric(nrow(anomalous_validation_set))
+
+  for (j in 1:nrow(anomalous_validation_set)) {
+    current_anomalous_sample <- matrix(anomalous_validation_set[j, ], nrow = 1)
+    combined_data_with_anomalous <- rbind(combined_sampled_data, current_anomalous_sample)
+    current_non_anomalous_sample <- matrix(combined_sampled_data[j, ], nrow = 1)  # Random non-anomalous sample
+    
+    pca_with_anomalous <- prcomp(as.matrix(dist(combined_data_with_anomalous, method = "manhattan")), center = TRUE, scale. = TRUE)
+    
+    # Plotting
+    #df <- data.frame(PC1 = pca_with_anomalous$x[,1], PC2 = pca_with_anomalous$x[,2])
+    df <- data.frame(PC1 = pca_with_anomalous$x[,1], PC2 = pca_with_anomalous$x[,2], 
+                     PC3 = pca_with_anomalous$x[,3], PC4 = pca_with_anomalous$x[,4], 
+                     PC5 = pca_with_anomalous$x[,5], PC6 = pca_with_anomalous$x[,6])
+    df$cluster <- c(cluster_assignments, "anomalous")
+    #print(ggplot(df, aes(x = PC1, y = PC2, color = cluster)) +
+    #        geom_point() +
+    #        labs(title = "PCA plot with cluster assignments and anomalous sample", x = "PC1", y = "PC2") +
+    #        theme_minimal())
+    
+    # Find the center for each cluster
+    centroids <- aggregate(cbind(PC1, PC2, PC3, PC4, PC5, PC6) ~ cluster, df, mean)
+    print("centroid")
+    print(centroids)
+    
+    # Find the squared variance of each cluster...
+    std_devs <- aggregate(cbind(PC1, PC2, PC3, PC4, PC5, PC6) ~ cluster, df, sd)
+    print("stdev")
+    print(std_devs)
+    
+    anomalous_centroid <- centroids[centroids$cluster == "anomalous", c("PC1", "PC2", "PC3", "PC4", "PC5", "PC6")]
+    
+    distances_in_std_devs <- numeric(optimal_k)
+    
+    # Loop over the first optimal_k clusters
+    for (k in 1:optimal_k) {
+      # Get the centroid and standard deviation of the current cluster
+      current_cluster_centroid <- centroids[centroids$cluster == k, c("PC1", "PC2", "PC3", "PC4", "PC5", "PC6")]
+      print(current_cluster_centroid)
+      current_cluster_std_dev <- std_devs[std_devs$cluster == k, c("PC1", "PC2", "PC3", "PC4", "PC5", "PC6")]
+      print(current_cluster_std_dev)
+      
+      # Compute the distance in standard deviations
+      distances_in_std_devs[k] <- abs(anomalous_centroid - current_cluster_centroid) / current_cluster_std_dev
+    }
+    
+    # Print the distances
+    print("distance in std devs")
+    print(distances_in_std_devs)
+    print(min(unlist(distances_in_std_devs)))
+    
+    min_dists[j] <- min(unlist(distances_in_std_devs))
+    
+    
+    # Calculate distance to each cluster centroid for the non-anomalous sample
+    non_anomalous_centroid <- centroids[centroids$cluster == cluster_assignments[j], c("PC1", "PC2", "PC3", "PC4", "PC5", "PC6")]
+    distances_in_std_devs_non_anomalous <- numeric(optimal_k)
+    
+    for (k in 1:optimal_k) {
+      current_cluster_centroid <- centroids[centroids$cluster == k, c("PC1", "PC2", "PC3", "PC4", "PC5", "PC6")]
+      current_cluster_std_dev <- std_devs[std_devs$cluster == k, c("PC1", "PC2", "PC3", "PC4", "PC5", "PC6")]
+      
+      # Compute the distance in standard deviations for non-anomalous sample
+      distances_in_std_devs_non_anomalous[k] <- abs(non_anomalous_centroid - current_cluster_centroid) / current_cluster_std_dev
+    }
+    
+    min_dists_non_anomalous[j] <- min(unlist(distances_in_std_devs_non_anomalous))
+    
+    
+    pca_data_before_anomalous <- as.matrix((pca_results_non_anomalous$center[0:num_pcs]))
+    #print(pca_data_before_anomalous)
+    pca_data_after_anomalous <- as.matrix((pca_with_anomalous$center[0:num_pcs]))
+    #print(pca_data_after_anomalous)
+    
+    #hotelling_test_result <- HotellingsT2Test(pca_data_before_anomalous, pca_data_after_anomalous)
+    hotelling_test_result <- hotelling.test(pca_data_before_anomalous, pca_data_after_anomalous)
+    
+    print(hotelling_test_result)
+    print(names(hotelling_test_result))
+    
+    ht_vals[j] <- hotelling_test_result$pval
+    
+    
+    # Non-anomalous sample
+    combined_data_with_non_anomalous <- rbind(combined_sampled_data, current_non_anomalous_sample)
+    pca_with_non_anomalous <- prcomp(as.matrix(dist(combined_data_with_non_anomalous, method = "manhattan")), center = TRUE, scale. = TRUE)
+    pca_data_after_non_anomalous <- as.matrix((pca_with_non_anomalous$center[0:num_pcs]))
+    #print(pca_with_non_anomalous$center[0:num_pcs])
+    print("testing...")
+    hotelling_test_result_non_anomalous <- hotelling.test(pca_data_before_anomalous, pca_data_after_non_anomalous)
+    ht_vals_non_anomalous[j] <- hotelling_test_result_non_anomalous$pval
+  }
+  
+  print("min dist")
+  print(min_dists)
+  
+  hotelling_p_values[i] <- mean(ht_vals)
+  hotelling_p_values_non_anomalous[i] <- mean(ht_vals_non_anomalous)
+  non_anomalous_distances[i] <- mean(min_dists_non_anomalous)
+  anomalous_distances[i] <- mean(min_dists)
+  
+}
+
+# Print the optimal k values and anomalous distances
+print(optimal_k_values)
+print(anomalous_distances)
+print(mean(anomalous_distances))
+print("Hotelling's T-squared test p-values:")
+print(hotelling_p_values)
+print("Hotelling's T-squared test p-values for Non-Anomalous:")
+print(hotelling_p_values_non_anomalous)
+print("Non-Anomalous Distance:")
+print(non_anomalous_distances)
+
+
+results_df <- data.frame(
+  Type = rep(c("Anomalous", "Non-Anomalous"), each = itercount),
+  Hotelling_P_Value = c(hotelling_p_values, hotelling_p_values_non_anomalous),
+  Cluster_Distance = c(anomalous_distances, non_anomalous_distances)
+)
+
+# Scatter plot of Hotelling P-Value vs. Cluster Distance
+ggplot(results_df, aes(x = Cluster_Distance, y = Hotelling_P_Value, color = Type)) +
+  geom_point() +
+  theme_minimal() +
+  labs(title = "Hotelling P-Value vs. Cluster Distance", x = "Cluster Distance", y = "Hotelling P-Value")
+
+# Scatter plot of Hotelling P-Value vs. Cluster Distance
+ggplot(results_df, aes(x = Cluster_Distance, y = Hotelling_P_Value, color = Type)) +
+  geom_point() +
+  theme_minimal() +
+  labs(title = "Hotelling P-Value vs. Cluster Distance", x = "Cluster Distance", y = "Hotelling P-Value")
+
+# Scatter plot of Hotelling P-Value vs. Cluster Distance
+ggplot(results_df, aes(x = Cluster_Distance, y = Hotelling_P_Value, color = Type)) +
+  geom_point() +
+  theme_minimal() +
+  labs(title = "Hotelling P-Value vs. Cluster Distance", x = "Cluster Distance", y = "Hotelling P-Value")
+
+# Fit a GLM
+model <- glm(Hotelling_P_Value ~ Cluster_Distance, data = results_df, family = "gaussian")
+
+
+# Plot the model
+#plot(model)
+# Assuming your dataframe is named 'results_df' and contains 'Hotelling_P_Value' and 'Cluster_Distance' columns
+ggplot(results_df, aes(x = Cluster_Distance, y = Hotelling_P_Value)) +
+  geom_point(aes(color = Type), alpha = 0.6) +  # Add points with different colors for types
+  geom_smooth(method = "lm", se = TRUE, color = "blue") +  # Add a linear regression line with standard error
+  labs(title = "Relationship between Hotelling's T-squared p-value and Cluster Distance",
+       x = "Cluster Distance",
+       y = "Hotelling's T-squared p-value") +
+  theme_minimal() +
+  theme(legend.title = element_blank())  # Clean and minimal theme with legend title removed
+
+# Summary of the model
+summary(model)
+
+### These results suggest that we can consider using the Hotelling method to avoid
+### the clustering overhead.
+
+library(ggplot2)
+library(dplyr)
+
+# Creating a dataframe from your provided vectors
+data <- data.frame(
+  Anomalous_Distances = anomalous_distances,
+  Hotelling_P_Values = hotelling_p_values
+)
+
+# Calculating mean of Anomalous Distances
+mean_anomalous_distance <- mean(data$Anomalous_Distances)
+
+# Adding a column for identification
+data$Type <- "Observation"
+
+# Adding a row for mean value
+data <- data %>%
+  add_row(Anomalous_Distances = mean_anomalous_distance, Hotelling_P_Values = NA, Type = "Mean")
+
+# Plotting
+ggplot(data, aes(x = Anomalous_Distances, y = Hotelling_P_Values, color = Type)) +
+  geom_point() +
+  geom_line(data = data %>% filter(Type == "Observation")) +
+  geom_hline(yintercept = mean(data$Hotelling_P_Values, na.rm = TRUE), linetype = "dashed", color = "red") +
+  geom_vline(xintercept = mean_anomalous_distance, linetype = "dashed", color = "blue") +
+  labs(title = "Relationship between Anomalous Distances and Hotelling's T-squared P-values",
+       x = "Anomalous Distances",
+       y = "Hotelling's T-squared P-values") +
+  theme_minimal() +
+  theme(legend.title = element_blank())
+
+
+model2 <- glm(hotelling_p_values ~ anomalous_distances, family = "gaussian")
+
+
+### The data at this point suggest that there is a solid negative relationship between the the cluster distance
+### and the Hotelling's T^2 test statistic. This is even the same relationship from before, but because
+### we are "zoomed in" on a specific location in the state space noise has a more dominate effect.
+
+
+# Assuming results_df is your data frame with 'anomalous_distances' and 'hotelling_p_values' columns
+ggplot(data, aes(x = Anomalous_Distances, y = Hotelling_P_Values)) +
+  geom_point(color = "blue") +
+  geom_smooth(method = "lm", color = "red") +
+  labs(title = "Relationship Between Anomalous Distances and Hotelling P Values",
+       x = "Anomalous Distances",
+       y = "Hotelling P Values") +
+  theme_minimal()
+
+summary(model2)
+###
+### This means that even when using only just the first few PCs, the anomalous results shows
+### a strong correlation between significance (smaller p-value is more significant) and cluster 
+### distance.
+###
+
+
+
+```
