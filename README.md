@@ -5,7 +5,7 @@ Centroids3.Rmd updates the math to use Hotelling's T^2 statistic to compare samp
 
 ![Hotelling's](https://raw.githubusercontent.com/subsilico/centroids/master/p-v-dist-centroids.png)
 
-This graph shows how cluster distance is related to Hotelling's statistic.
+This graph shows how cluster distance is related to Hotelling's statistic, making cluster analysis unnecessary when predicting anomalies.
 
 
 
