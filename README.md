@@ -12,3 +12,9 @@ For completeness, this is what our example samples look like when visualized and
 ![Centroids of behavior](https://raw.githubusercontent.com/subsilico/centroids/master/centroids.png)
 
 You can see there are three clusters of behavior in the sample data.
+
+## Logging data to centroids using text embeddings
+
+![Text embedings show lines of logging can create clustered data from which to use for anomaly detection](https://raw.githubusercontent.com/subsilico/centroids/master/logging-to-clustered-samples-using-embeddings.png)
+
+See the embeddings.r file for the anaysis.
